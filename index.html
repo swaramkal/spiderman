@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spider-Man | Your Friendly Neighborhood</title>
+  <meta name="description" content="A cinematic, scroll-driven tribute to Spider-Man: origin, powers, iconic moments and villains.">
+  <meta name="theme-color" content="#050506">
+
+  <!-- Fonts: Anton (display) + Barlow (text). Local copies can go in assets/fonts/. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <noscript><style>.loader{display:none!important}</style></noscript>
+</head>
+
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- ============ LOADING SCREEN ============ -->
+  <div class="loader" id="loader" role="status" aria-live="polite">
+    <svg class="loader__web" viewBox="-100 -100 200 200" aria-hidden="true">
+      <g class="lw-group">
+        <line class="lw" x1="0" y1="0" x2="88" y2="0" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="62" y2="62" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="0" y2="88" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="-62" y2="62" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="-88" y2="0" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="-62" y2="-62" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="0" y2="-88" pathLength="1"/>
+        <line class="lw" x1="0" y1="0" x2="62" y2="-62" pathLength="1"/>
+        <circle class="lw" r="22" pathLength="1"/>
+        <circle class="lw" r="44" pathLength="1"/>
+        <circle class="lw" r="66" pathLength="1"/>
+        <circle class="lw" r="88" pathLength="1"/>
+      </g>
+    </svg>
+    <p class="loader__num"><span id="loaderNum">0</span>%</p>
+    <p class="loader__txt">Swinging into the city</p>
+  </div>
+
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+  <div class="grain" aria-hidden="true"></div>
+  <canvas class="fx" id="fxCanvas" aria-hidden="true"></canvas>
+  <div class="cursor" aria-hidden="true"><i class="cursor__ring" id="cRing"></i><i class="cursor__dot" id="cDot"></i></div>
+
+  <!-- ============ NAVIGATION ============ -->
+  <nav class="nav" id="nav" aria-label="Primary">
+    <a class="brand" href="#hero" data-link>
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M16 11c2 0 3 1.6 3 3.4 0 1.2-.5 2-1 2.6.6 1 1 2 1 3.2 0 2-1.3 3.3-3 3.3s-3-1.3-3-3.3c0-1.2.4-2.2 1-3.2-.5-.6-1-1.4-1-2.6C13 12.6 14 11 16 11z" fill="currentColor"/>
+        <path d="M13 14L5 8M13 16L3 16M13 18L4 25M13 20L8 29M19 14l8-6M19 16l10 0M19 18l9 7M19 20l5 9" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span>Spider-Man</span>
+    </a>
+    <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu"><span></span><span></span></button>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#intro" data-link>The Man</a></li>
+      <li><a href="#origin" data-link>Origin</a></li>
+      <li><a href="#powers" data-link>Powers</a></li>
+      <li><a href="#moments" data-link>Moments</a></li>
+      <li><a href="#villains" data-link>Villains</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+
+    <!-- ============ 1. HERO ============ -->
+    <header class="hero" id="hero" data-bg="#050506">
+      <div class="hero__sky" data-speed="0.12"></div>
+      <div class="hero__media" data-speed="0.18">
+        <!-- Optional background video. If the file is missing it is removed and the gradient shows. -->
+        <video class="bgvideo" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+          <source src="assets/videos/hero.mp4" type="video/mp4">
+        </video>
+      </div>
+      <canvas class="hero__web" id="webCanvas" aria-hidden="true"></canvas>
+      <svg class="hero__eyes" viewBox="0 0 600 220" data-depth="0.5" aria-hidden="true">
+        <defs>
+          <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#efe9e1"/><stop offset="1" stop-color="#e1141c"/>
+          </linearGradient>
+        </defs>
+        <path class="eye" d="M30 60 Q150 10 275 125 Q170 200 30 60Z"/>
+        <path class="eye" d="M570 60 Q450 10 325 125 Q430 200 570 60Z"/>
+      </svg>
+      <div class="skyline skyline--far" id="skyFar" data-depth="0.2" data-speed="0.08" aria-hidden="true"></div>
+      <div class="skyline skyline--near" id="skyNear" data-depth="0.45" data-speed="0.03" aria-hidden="true"></div>
+      <canvas class="hero__embers" id="embers" aria-hidden="true"></canvas>
+      <div class="hero__flare" aria-hidden="true"></div>
+      <svg class="swinger" id="swinger" aria-hidden="true">
+        <line id="swLine" x1="0" y1="0" x2="0" y2="0" stroke="#efe9e1" stroke-width="2" opacity="0"/>
+        <g id="swFig" opacity="0">
+          <g class="sw-rim" stroke="#e1141c" fill="#e1141c" stroke-linecap="round" stroke-linejoin="round" transform="translate(-3 -3)">
+            <path d="M100 52L104 102" stroke-width="26" fill="none"/><path d="M98 60L122 26L138 2M98 64L72 88L52 74" stroke-width="13" fill="none"/><path d="M104 100L84 136L66 170M104 100L130 128L152 152" stroke-width="15" fill="none"/><circle cx="100" cy="36" r="14"/>
+          </g>
+          <g stroke="#030304" fill="#030304" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M100 52L104 102" stroke-width="22" fill="none"/><path d="M98 60L122 26L138 2M98 64L72 88L52 74" stroke-width="9" fill="none"/><path d="M104 100L84 136L66 170M104 100L130 128L152 152" stroke-width="11" fill="none"/><circle cx="100" cy="36" r="12"/>
+          </g>
+        </g>
+      </svg>
+      <div class="hero__vignette"></div>
+
+      <div class="hero__content">
+        <h1 class="hero__title" id="heroTitle" aria-label="Spider-Man">
+          <span class="word" data-chars>SPIDER</span><span class="dash" aria-hidden="true">-</span><span class="word" data-chars>MAN</span>
+        </h1>
+        <p class="hero__sub">Your friendly neighborhood hero</p>
+        <p class="hero__lead">Fifteen years old, late for everything, and the only one on the rooftop when the city needs someone. Scroll to follow him from the bite to the mask.</p>
+        <div class="hero__cta">
+          <a class="btn btn--solid" href="#origin" data-link data-cursor>Start the story</a>
+          <a class="btn btn--ghost" href="#villains" data-link data-cursor>Meet the villains</a>
+        </div>
+      </div>
+
+      <a class="scroll-cue" href="#intro" data-link aria-label="Scroll to the next section">
+        <span class="scroll-cue__line"></span>
+        <span class="scroll-cue__txt">Scroll</span>
+      </a>
+    </header>
+
+    <!-- ============ 2. INTRODUCTION ============ -->
+    <section class="intro section" id="intro" data-bg="#0a0a0c">
+      <div class="intro__grid">
+        <div class="intro__text">
+          <h2 class="h2" data-split>Peter Parker never asked to be a legend.</h2>
+          <p class="lede" data-fade>Brilliant, broke and always running late, Peter patches his own suit, pays his debts in favors, and still stops to help a stranger with the groceries. Spider-Man is what happens when the kid next door refuses to look away.</p>
+          <dl class="facts" data-fade>
+            <div><dt>Real name</dt><dd>Peter Benjamin Parker</dd></div>
+            <div><dt>Home</dt><dd>Forest Hills, Queens</dd></div>
+            <div><dt>First seen</dt><dd>Amazing Fantasy #15, 1962</dd></div>
+          </dl>
+        </div>
+        <figure class="frame reveal intro__frame" role="img" aria-label="Spider-Man crouched on a rooftop">
+          <div class="zoom"><div class="media" data-src="assets/images/spiderman-portrait" style="--a:#7d0b11;--b:#050506;--rot:8deg"></div></div>
+          <figcaption>Illustration. Add spiderman-portrait.jpg to replace it.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ 3. ORIGIN (pinned, scrubbed story) ============ -->
+    <section class="origin" id="origin" data-bg="#150507" aria-labelledby="originTitle">
+      <div class="origin__bg" aria-hidden="true">
+        <div class="origin__ring"></div>
+        <div class="origin__flash"></div>
+        <div class="origin__shock"></div>
+        <div class="origin__drop"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 11c2 0 3 1.6 3 3.4 0 1.2-.5 2-1 2.6.6 1 1 2 1 3.2 0 2-1.3 3.3-3 3.3s-3-1.3-3-3.3c0-1.2.4-2.2 1-3.2-.5-.6-1-1.4-1-2.6C13 12.6 14 11 16 11z" fill="currentColor"/><path d="M13 14L5 8M13 16L3 16M13 18L4 25M13 20L8 29M19 14l8-6M19 16l10 0M19 18l9 7M19 20l5 9" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></div>
+      </div>
+      <h2 class="visually-hidden" id="originTitle">Origin story</h2>
+      <div class="origin__stage">
+        <article class="beat">
+          <h3 class="beat__title">The field trip</h3>
+          <p>A science exhibit, a class of bored teenagers, and one genetically altered spider drifting down on a thread nobody noticed.</p>
+        </article>
+        <article class="beat">
+          <h3 class="beat__title">The bite</h3>
+          <p>A sting on the back of the hand. By morning the world is louder and brighter, and Peter's fingertips hold to the wall like they were made for it.</p>
+        </article>
+        <article class="beat">
+          <h3 class="beat__title">The mistake</h3>
+          <p>He had the power to stop a thief and chose not to. The cost of that choice arrives the same night.</p>
+        </article>
+        <article class="beat">
+          <h3 class="beat__title">The promise</h3>
+          <p>Uncle Ben's words become Peter's rule: with great power comes great responsibility. He sews a mask and goes out into the city.</p>
+        </article>
+      </div>
+      <p class="origin__count" aria-hidden="true">Chapter <b id="originIdx">1</b> of 4</p>
+    </section>
+
+    <!-- ============ 4. POWERS ============ -->
+    <section class="powers section" id="powers" data-bg="#050506">
+      <h2 class="h2" data-split>Everything the bite gave him, and everything he built himself.</h2>
+      <div class="powers__grid">
+        <article class="power power--sense" data-tilt>
+          <div class="sense" aria-hidden="true"><i></i><i></i><i></i></div>
+          <h3 class="power__name">Spider-sense</h3>
+          <p>A tingle at the base of the skull, half a second before danger arrives. It does not say what is coming, only that it is.</p>
+        </article>
+        <article class="power" data-tilt>
+          <h3 class="power__name">Wall-crawling</h3>
+          <p>Hands and feet that grip any surface, from glass towers to wet brick.</p>
+        </article>
+        <article class="power" data-tilt>
+          <h3 class="power__name">Superhuman strength</h3>
+          <p>Enough to stop a speeding train, though it nearly breaks him.</p>
+        </article>
+        <article class="power" data-tilt>
+          <h3 class="power__name">Agility and reflexes</h3>
+          <p>He reads a punch before it is thrown and treats the street like a gym.</p>
+        </article>
+        <article class="power" data-tilt>
+          <h3 class="power__name">Web-slinging</h3>
+          <p>Web-shooters Peter designed himself. The proof that the brain is part of the power.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 5. CINEMATIC MOMENTS (pinned horizontal scroll) ============ -->
+    <section class="moments" id="moments" data-bg="#0b0305" aria-labelledby="momentsTitle">
+      <div class="moments__head">
+        <h2 class="h2" id="momentsTitle" data-split>Six frames you can feel.</h2>
+        <p class="moments__hint" data-fade>Keep scrolling, or swipe on a phone.</p>
+      </div>
+      <div class="moments__viewport">
+        <div class="moments__track">
+          <figure class="moment" role="img" aria-label="Rooftop at dusk">
+            <div class="media" data-src="assets/images/moment-1" style="--a:#8c0c14;--b:#0a0304;--rot:0deg"></div>
+            <figcaption><b>Rooftop at dusk</b><span>The city lights up below him.</span></figcaption>
+          </figure>
+          <figure class="moment" role="img" aria-label="The first swing">
+            <div class="media" data-src="assets/images/moment-2" style="--a:#3a0609;--b:#050506;--rot:25deg"></div>
+            <figcaption><b>The first swing</b><span>Eight stories of nothing, then the line pulls tight.</span></figcaption>
+          </figure>
+          <figure class="moment" role="img" aria-label="Runaway train">
+            <div class="media" data-src="assets/images/moment-3" style="--a:#a1121a;--b:#120305;--rot:-12deg"></div>
+            <figcaption><b>Runaway train</b><span>Webs stretch. Muscles scream. It stops.</span></figcaption>
+          </figure>
+          <figure class="moment" role="img" aria-label="Rain-soaked alley">
+            <div class="media" data-src="assets/images/moment-4" style="--a:#26070b;--b:#050506;--rot:40deg"></div>
+            <figcaption><b>Rain-soaked alley</b><span>Four on one, and he is still cracking jokes.</span></figcaption>
+          </figure>
+          <figure class="moment" role="img" aria-label="Bridge rescue">
+            <div class="media" data-src="assets/images/moment-5" style="--a:#7d0b11;--b:#07080a;--rot:-30deg"></div>
+            <figcaption><b>Bridge rescue</b><span>A cable, a cab and one very long second.</span></figcaption>
+          </figure>
+          <figure class="moment" role="img" aria-label="Mask off">
+            <div class="media" data-src="assets/images/moment-6" style="--a:#5a080e;--b:#050506;--rot:15deg"></div>
+            <figcaption><b>Mask off</b><span>Behind the hero is a tired kid who did the right thing.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6. VILLAINS ============ -->
+    <section class="villains section" id="villains" data-bg="#050506">
+      <h2 class="h2" data-split>Every hero is measured by who stands against him.</h2>
+      <div class="flash" id="flash" aria-hidden="true"></div>
+      <div class="villains__row" id="villainRow">
+        <div class="villain" role="button" tabindex="0" aria-expanded="false" style="--a:#1d6a2b;--b:#050506">
+          <div class="media" data-src="assets/images/villain-goblin"></div>
+          <h3 class="villain__name">Green Goblin</h3>
+          <p class="villain__txt">Norman Osborn, a genius turned madman, with pumpkin bombs and a glider that never misses.</p>
+        </div>
+        <div class="villain" role="button" tabindex="0" aria-expanded="false" style="--a:#a1121a;--b:#050506">
+          <div class="media" data-src="assets/images/villain-octopus"></div>
+          <h3 class="villain__name">Doctor Octopus</h3>
+          <p class="villain__txt">Otto Octavius. Four mechanical arms fused to his spine, a scientist undone by his own invention.</p>
+        </div>
+        <div class="villain" role="button" tabindex="0" aria-expanded="false" style="--a:#3b3b44;--b:#000">
+          <div class="media" data-src="assets/images/villain-venom"></div>
+          <h3 class="villain__name">Venom</h3>
+          <p class="villain__txt">An alien symbiote bonded to a bitter host. It knows every move Peter knows.</p>
+        </div>
+        <div class="villain" role="button" tabindex="0" aria-expanded="false" style="--a:#8a6a2a;--b:#050506">
+          <div class="media" data-src="assets/images/villain-sandman"></div>
+          <h3 class="villain__name">Sandman</h3>
+          <p class="villain__txt">Flint Marko becomes a storm of sand. More a desperate father than a born criminal.</p>
+        </div>
+        <div class="villain" role="button" tabindex="0" aria-expanded="false" style="--a:#2a5a3a;--b:#050506">
+          <div class="media" data-src="assets/images/villain-vulture"></div>
+          <h3 class="villain__name">Vulture</h3>
+          <p class="villain__txt">Adrian Toomes, a salvage man in a flying harness who turned a grudge into a business.</p>
+        </div>
+        <div class="villain" role="button" tabindex="0" aria-expanded="false" data-fx="lightning" style="--a:#1a5ea8;--b:#050506">
+          <div class="media" data-src="assets/images/villain-electro"></div>
+          <h3 class="villain__name">Electro</h3>
+          <p class="villain__txt">Max Dillon was nobody until a power surge made him current. Now he wants the whole city to notice.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7. FINAL CINEMATIC ENDING ============ -->
+    <section class="ending" id="ending" data-bg="#190406">
+      <div class="ending__media" aria-hidden="true">
+        <video class="bgvideo" muted loop playsinline preload="metadata">
+          <source src="assets/videos/ending.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="ending__glow" aria-hidden="true"></div>
+      <div class="ending__content">
+        <p class="ending__quote" data-split>With great power comes great responsibility.</p>
+        <p class="ending__small" data-fade>The mask comes down. The city is still out there.</p>
+        <a class="btn btn--solid" href="#hero" data-link data-cursor>Swing back to the top</a>
+      </div>
+      <footer class="footer">
+        <p>Fan-made tribute for learning purposes. Spider-Man and related characters are trademarks of Marvel. This site is not affiliated with or endorsed by Marvel or Sony.</p>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- GSAP + ScrollTrigger from CDN (pinned versions) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
